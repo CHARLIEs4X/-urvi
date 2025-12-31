@@ -10,10 +10,11 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
+  font-family:sans-serif;
   color:#fff;
   overflow:hidden;
   text-align:center;
-  background:linear-gradient(-45deg,#ff9a9e,#fad0c4,#fbc2eb,#ff9a9e);
+  background:linear-gradient(-45deg,#ff9a9e,#fbc2eb,#fad0c4,#a18cd1);
   background-size:400% 400%;
   animation:bg 18s ease infinite;
 }
@@ -34,6 +35,20 @@ body{
 }
 .section.active{display:flex}
 
+/* Hearts */
+.heart{
+  position:fixed;
+  bottom:-10px;
+  font-size:22px;
+  background:linear-gradient(135deg,#ff9a9e,#fbc2eb);
+  -webkit-background-clip:text;
+  color:transparent;
+  animation:float 5s linear infinite;
+}
+@keyframes float{
+  to{transform:translateY(-110vh);opacity:0}
+}
+
 /* Tap & Hold */
 #hold{
   width:180px;height:180px;
@@ -50,20 +65,20 @@ body{
   position:absolute;
   inset:0;
   border-radius:50%;
-  background:rgba(255,255,255,.45);
+  background:rgba(255,255,255,.5);
   clip-path:circle(0%);
 }
 
 /* Boxes */
 .box{
-  width:150px;height:150px;
-  border-radius:28px;
-  font-size:48px;
+  width:160px;height:160px;
+  border-radius:30px;
+  font-size:50px;
   display:flex;
   align-items:center;
   justify-content:center;
   position:absolute;
-  box-shadow:0 25px 60px rgba(0,0,0,.4);
+  box-shadow:0 25px 60px rgba(0,0,0,.45);
   touch-action:none;
 }
 .box1{background:linear-gradient(135deg,#ff9a9e,#fad0c4)}
@@ -78,6 +93,7 @@ button{
   border-radius:18px;
   background:#fff;
   color:#000;
+  z-index:1;
 }
 
 /* Photos */
@@ -90,30 +106,46 @@ img.photo{
 
 /* Ticket */
 #ticket{
-  padding:24px;
+  padding:26px;
   width:260px;
   background:linear-gradient(135deg,#ffd700,#fff1a8);
   color:#000;
-  border-radius:18px;
+  border-radius:20px;
   font-weight:700;
+  cursor:pointer;
 }
 
-/* Slider */
-#slider{
-  width:260px;height:56px;
-  background:rgba(0,0,0,.35);
-  border-radius:30px;
+/* Envelope */
+#envelope{
+  width:220px;
+  height:150px;
+  background:#f4c2d7;
   position:relative;
+  border-radius:14px;
+  cursor:pointer;
+  box-shadow:0 20px 50px rgba(0,0,0,.4);
 }
-#knob{
-  width:56px;height:56px;
-  background:#fff;
-  border-radius:50%;
+.env-top{
   position:absolute;
-  left:0;top:0;
+  top:0;
+  width:100%;
+  height:75px;
+  background:#f9a8c4;
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  transform-origin:top;
+  transition:transform .9s ease;
 }
+.env-body{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:42px;
+}
+.open .env-top{transform:rotateX(180deg)}
 
-/* Letter page */
+/* Letter */
 #letterPage{
   background:#fff7ef;
   color:#2d2d2d;
@@ -138,20 +170,6 @@ img.photo{
   font-size:22px;
   margin-top:10px;
 }
-
-/* Hearts */
-.heart{
-  position:fixed;
-  bottom:-10px;
-  font-size:22px;
-  background:linear-gradient(135deg,#ff9a9e,#fbc2eb);
-  -webkit-background-clip:text;
-  color:transparent;
-  animation:float 5s linear infinite;
-}
-@keyframes float{
-  to{transform:translateY(-110vh);opacity:0}
-}
 </style>
 </head>
 
@@ -173,7 +191,6 @@ img.photo{
 
 <!-- Boxes -->
 <div class="section">
-  <p>Clear the boxes</p><br>
   <button onclick="next()">Continue →</button>
   <div id="boxArea"></div>
 </div>
@@ -190,10 +207,13 @@ img.photo{
   <div id="ticket" onclick="next()">🎫 GOLDEN TICKET<br><br>Tap to open</div>
 </div>
 
-<!-- Slider -->
+<!-- Envelope -->
 <div class="section">
-  <p>Slide to read 💌</p><br>
-  <div id="slider"><div id="knob"></div></div>
+  <div id="envelope" onclick="openLetter()">
+    <div class="env-top"></div>
+    <div class="env-body">💌</div>
+  </div>
+  <p style="margin-top:12px">Tap to open</p>
 </div>
 
 <!-- Letter -->
@@ -215,7 +235,7 @@ function next(){
   sections[i].classList.remove('active')
   i++
   sections[i].classList.add('active')
-  if(i>=2 && i<=6) setTimeout(next,3000)
+  if(i>=2 && i<=6) setTimeout(next,3200)
 }
 
 /* Hold */
@@ -238,34 +258,34 @@ function endHold(){clearInterval(holdInt)}
 function initBoxes(){
   const area=document.getElementById('boxArea')
   const emojis=['💋','❤️','😍','💕']
-  emojis.forEach((e,n)=>{
+  const pos=[
+    {x:110,y:260},{x:260,y:260},
+    {x:110,y:420},{x:260,y:420}
+  ]
+  emojis.forEach((e,i)=>{
     const b=document.createElement('div')
-    b.className=`box box${n+1}`
+    b.className=`box box${i+1}`
     b.textContent=e
-    b.style.left=120+n*30+'px'
-    b.style.top=200+n*30+'px'
+    b.style.left=pos[i].x+'px'
+    b.style.top=pos[i].y+'px'
     area.appendChild(b)
-    b.onpointerdown=x=>{
-      b.setPointerCapture(x.pointerId)
+    b.onpointerdown=ev=>{
+      b.setPointerCapture(ev.pointerId)
       b.onpointermove=m=>{
-        b.style.left=m.clientX-75+'px'
-        b.style.top=m.clientY-75+'px'
+        b.style.left=m.clientX-80+'px'
+        b.style.top=m.clientY-80+'px'
       }
     }
   })
 }
 
-/* Slider */
-knob.onpointerdown=e=>{
-  knob.setPointerCapture(e.pointerId)
-  knob.onpointermove=m=>{
-    let x=Math.min(204,Math.max(0,m.clientX-50))
-    knob.style.left=x+'px'
-    if(x>180){
-      next()
-      letterPage.textContent=TEXT
-    }
-  }
+/* Letter open */
+function openLetter(){
+  document.getElementById('envelope').classList.add('open')
+  setTimeout(()=>{
+    next()
+    letterPage.textContent=TEXT
+  },900)
 }
 
 /* Letter text */
@@ -296,7 +316,7 @@ setInterval(()=>{
   h.style.left=Math.random()*100+'vw'
   document.body.appendChild(h)
   setTimeout(()=>h.remove(),5000)
-},400)
+},420)
 </script>
 
 </body>

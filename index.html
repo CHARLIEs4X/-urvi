@@ -38,7 +38,7 @@ body{
 }
 .section.active{display:flex}
 
-/* ❤️ Floating hearts */
+/* Floating hearts */
 .heart{
   position:fixed;
   bottom:-10px;
@@ -73,18 +73,23 @@ body{
   clip-path:circle(0%);
 }
 
-/* 🔲 BIG BOXES */
+/* Responsive BIG boxes */
 .box{
-  width:240px;
-  height:240px;
-  border-radius:42px;
-  font-size:78px;
+  width:min(42vw,220px);
+  height:min(42vw,220px);
+  border-radius:36px;
+  font-size:min(14vw,72px);
   display:flex;
   align-items:center;
   justify-content:center;
   position:absolute;
-  box-shadow:0 35px 90px rgba(0,0,0,.6);
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
   touch-action:none;
+  pointer-events:auto;
+}
+
+.box.moved{
+  pointer-events:none;
 }
 
 .box1{background:linear-gradient(135deg,#ff9a9e,#fad0c4)}
@@ -267,34 +272,52 @@ function startHold(){
 }
 function endHold(){clearInterval(holdInt)}
 
-/* Boxes centered ON button */
+/* Boxes – bulletproof positioning */
 function initBoxes(){
-  const area=document.getElementById('boxArea')
-  area.innerHTML=''
+  const area = document.getElementById('boxArea')
+  area.innerHTML = ''
 
-  const btn=document.getElementById('continueBtn')
-  const r=btn.getBoundingClientRect()
+  const section = area.closest('.section')
+  const btn = document.getElementById('continueBtn')
 
-  const emojis=['💋','❤️','😍','💕']
-  const offsets=[
-    {x:-120,y:-120},{x:120,y:-120},
-    {x:-120,y:120},{x:120,y:120}
+  const sRect = section.getBoundingClientRect()
+  const bRect = btn.getBoundingClientRect()
+
+  const centerX = bRect.left - sRect.left + bRect.width/2
+  const centerY = bRect.top  - sRect.top  + bRect.height/2
+
+  const emojis = ['💋','❤️','😍','💕']
+  const offsets = [
+    {x:-90,y:-90},{x:90,y:-90},
+    {x:-90,y:90},{x:90,y:90}
   ]
 
   emojis.forEach((e,i)=>{
-    const b=document.createElement('div')
-    b.className=`box box${i+1}`
-    b.textContent=e
-    b.style.left=r.left + r.width/2 + offsets[i].x - 120 + 'px'
-    b.style.top =r.top  + r.height/2+ offsets[i].y - 120 + 'px'
-    area.appendChild(b)
+    const box = document.createElement('div')
+    box.className = `box box${i+1}`
+    box.textContent = e
 
-    b.onpointerdown=ev=>{
-      b.setPointerCapture(ev.pointerId)
-      b.onpointermove=m=>{
-        b.style.left=m.clientX-120+'px'
-        b.style.top =m.clientY-120+'px'
-      }
+    box.style.left = (centerX + offsets[i].x) + 'px'
+    box.style.top  = (centerY + offsets[i].y) + 'px'
+
+    area.appendChild(box)
+
+    let dragging = false
+
+    box.onpointerdown = ev => {
+      dragging = true
+      box.setPointerCapture(ev.pointerId)
+    }
+
+    box.onpointermove = ev => {
+      if(!dragging) return
+      box.style.left = (ev.clientX - sRect.left - box.offsetWidth/2) + 'px'
+      box.style.top  = (ev.clientY - sRect.top  - box.offsetHeight/2) + 'px'
+    }
+
+    box.onpointerup = () => {
+      dragging = false
+      box.classList.add('moved')
     }
   })
 }

@@ -9,15 +9,17 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+
 body{
-  font-family:sans-serif;
   color:#fff;
   overflow:hidden;
   text-align:center;
   background:linear-gradient(-45deg,#ff9a9e,#fbc2eb,#fad0c4,#a18cd1);
   background-size:400% 400%;
   animation:bg 18s ease infinite;
+  font-family:sans-serif;
 }
+
 @keyframes bg{
   0%{background-position:0% 50%}
   50%{background-position:100% 50%}
@@ -25,7 +27,8 @@ body{
 }
 
 .section{
-  width:100vw;height:100vh;
+  width:100vw;
+  height:100vh;
   display:none;
   justify-content:center;
   align-items:center;
@@ -35,7 +38,7 @@ body{
 }
 .section.active{display:flex}
 
-/* Hearts */
+/* ❤️ Floating hearts */
 .heart{
   position:fixed;
   bottom:-10px;
@@ -51,57 +54,67 @@ body{
 
 /* Tap & Hold */
 #hold{
-  width:180px;height:180px;
+  width:190px;
+  height:190px;
   border-radius:50%;
   border:4px solid #fff;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:18px;
-  background:rgba(255,255,255,.2);
+  background:rgba(255,255,255,.25);
   position:relative;
 }
 #fill{
   position:absolute;
   inset:0;
   border-radius:50%;
-  background:rgba(255,255,255,.5);
+  background:rgba(255,255,255,.6);
   clip-path:circle(0%);
 }
 
-/* Boxes */
+/* 🔲 BIG BOXES */
 .box{
-  width:160px;height:160px;
-  border-radius:30px;
-  font-size:50px;
+  width:240px;
+  height:240px;
+  border-radius:42px;
+  font-size:78px;
   display:flex;
   align-items:center;
   justify-content:center;
   position:absolute;
-  box-shadow:0 25px 60px rgba(0,0,0,.45);
+  box-shadow:0 35px 90px rgba(0,0,0,.6);
   touch-action:none;
 }
+
 .box1{background:linear-gradient(135deg,#ff9a9e,#fad0c4)}
 .box2{background:linear-gradient(135deg,#fbc2eb,#a6c1ee)}
 .box3{background:linear-gradient(135deg,#ffecd2,#fcb69f)}
 .box4{background:linear-gradient(135deg,#ffdde1,#ee9ca7)}
 
-button{
-  padding:16px 34px;
+#boxArea{
+  position:absolute;
+  inset:0;
+  z-index:5;
+}
+
+#continueBtn{
+  position:relative;
+  z-index:1;
+  padding:18px 38px;
   font-size:18px;
   border:none;
-  border-radius:18px;
+  border-radius:20px;
   background:#fff;
   color:#000;
-  z-index:1;
 }
 
 /* Photos */
 img.photo{
   max-width:85%;
   max-height:85%;
-  border-radius:22px;
-  box-shadow:0 25px 60px rgba(0,0,0,.6);
+  border-radius:24px;
+  box-shadow:0 30px 70px rgba(0,0,0,.65);
 }
 
 /* Ticket */
@@ -110,26 +123,26 @@ img.photo{
   width:260px;
   background:linear-gradient(135deg,#ffd700,#fff1a8);
   color:#000;
-  border-radius:20px;
+  border-radius:22px;
   font-weight:700;
   cursor:pointer;
 }
 
 /* Envelope */
 #envelope{
-  width:220px;
-  height:150px;
+  width:230px;
+  height:155px;
   background:#f4c2d7;
   position:relative;
-  border-radius:14px;
+  border-radius:16px;
   cursor:pointer;
-  box-shadow:0 20px 50px rgba(0,0,0,.4);
+  box-shadow:0 25px 60px rgba(0,0,0,.45);
 }
 .env-top{
   position:absolute;
   top:0;
   width:100%;
-  height:75px;
+  height:78px;
   background:#f9a8c4;
   clip-path:polygon(0 0,100% 0,50% 100%);
   transform-origin:top;
@@ -141,7 +154,7 @@ img.photo{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:42px;
+  font-size:44px;
 }
 .open .env-top{transform:rotateX(180deg)}
 
@@ -151,20 +164,20 @@ img.photo{
   color:#2d2d2d;
   width:92%;
   max-height:80vh;
-  padding:30px;
-  border-radius:22px;
+  padding:32px;
+  border-radius:26px;
   font-family:'Playfair Display',serif;
   font-size:18px;
   line-height:1.7;
   overflow-y:auto;
   text-align:left;
-  box-shadow:0 30px 70px rgba(0,0,0,.45);
+  box-shadow:0 35px 80px rgba(0,0,0,.5);
 }
 
 /* Final */
 .finalText{
   font-family:'Great Vibes',cursive;
-  font-size:56px;
+  font-size:58px;
 }
 .subFinal{
   font-size:22px;
@@ -191,8 +204,8 @@ img.photo{
 
 <!-- Boxes -->
 <div class="section">
-  <button onclick="next()">Continue →</button>
   <div id="boxArea"></div>
+  <button id="continueBtn" onclick="next()">Continue →</button>
 </div>
 
 <!-- Photos -->
@@ -238,7 +251,7 @@ function next(){
   if(i>=2 && i<=6) setTimeout(next,3200)
 }
 
-/* Hold */
+/* Tap & Hold */
 let prog=0,holdInt
 function startHold(){
   holdInt=setInterval(()=>{
@@ -254,26 +267,33 @@ function startHold(){
 }
 function endHold(){clearInterval(holdInt)}
 
-/* Boxes */
+/* Boxes centered ON button */
 function initBoxes(){
   const area=document.getElementById('boxArea')
+  area.innerHTML=''
+
+  const btn=document.getElementById('continueBtn')
+  const r=btn.getBoundingClientRect()
+
   const emojis=['💋','❤️','😍','💕']
-  const pos=[
-    {x:110,y:260},{x:260,y:260},
-    {x:110,y:420},{x:260,y:420}
+  const offsets=[
+    {x:-120,y:-120},{x:120,y:-120},
+    {x:-120,y:120},{x:120,y:120}
   ]
+
   emojis.forEach((e,i)=>{
     const b=document.createElement('div')
     b.className=`box box${i+1}`
     b.textContent=e
-    b.style.left=pos[i].x+'px'
-    b.style.top=pos[i].y+'px'
+    b.style.left=r.left + r.width/2 + offsets[i].x - 120 + 'px'
+    b.style.top =r.top  + r.height/2+ offsets[i].y - 120 + 'px'
     area.appendChild(b)
+
     b.onpointerdown=ev=>{
       b.setPointerCapture(ev.pointerId)
       b.onpointermove=m=>{
-        b.style.left=m.clientX-80+'px'
-        b.style.top=m.clientY-80+'px'
+        b.style.left=m.clientX-120+'px'
+        b.style.top =m.clientY-120+'px'
       }
     }
   })

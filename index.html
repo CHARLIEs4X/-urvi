@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For Urvi ❤️</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Great+Vibes&display=swap" rel="stylesheet">
-
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Great+Vibes&display=swap');
+
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  background:linear-gradient(-45deg,#ff9a9e,#fad0c4,#fbc2eb);
-  background-size:400% 400%;
-  animation:bg 18s ease infinite;
   color:#fff;
   overflow:hidden;
   text-align:center;
+  background:linear-gradient(-45deg,#ff9a9e,#fad0c4,#fbc2eb,#fbc2eb);
+  background-size:400% 400%;
+  animation:bg 18s ease infinite;
 }
 @keyframes bg{
   0%{background-position:0% 50%}
@@ -43,6 +43,7 @@ body{
   align-items:center;
   justify-content:center;
   font-size:18px;
+  background:rgba(255,255,255,.15);
   position:relative;
 }
 #fill{
@@ -55,41 +56,46 @@ body{
 
 /* BOXES */
 .box{
-  width:160px;height:160px;
-  border-radius:30px;
-  font-size:46px;
+  width:150px;height:150px;
+  border-radius:28px;
+  font-size:42px;
   display:flex;
   align-items:center;
   justify-content:center;
   position:absolute;
   touch-action:none;
-  z-index:2;
-  box-shadow:0 25px 60px rgba(0,0,0,.45);
+  box-shadow:0 20px 50px rgba(0,0,0,.4);
 }
 .box1{background:linear-gradient(135deg,#ff9a9e,#fad0c4)}
 .box2{background:linear-gradient(135deg,#fbc2eb,#a6c1ee)}
-.box3{background:linear-gradient(135deg,#ffdde1,#ee9ca7)}
-.box4{background:linear-gradient(135deg,#ffe29f,#ffa99f)}
+.box3{background:linear-gradient(135deg,#ffecd2,#fcb69f)}
+.box4{background:linear-gradient(135deg,#ffdde1,#ee9ca7)}
 
 button{
-  padding:16px 34px;
+  padding:18px 36px;
   font-size:18px;
   border-radius:18px;
   border:none;
+  background:#fff;
+  color:#000;
+  z-index:1;
 }
 
 /* PHOTOS */
 img.photo{
   max-width:85%;
   max-height:85%;
-  border-radius:22px;
-  box-shadow:0 30px 70px rgba(0,0,0,.6);
+  border-radius:20px;
+  box-shadow:0 25px 60px rgba(0,0,0,.6);
 }
 
-/* TICKET */
+/* GOLDEN TICKET */
 #ticket{
+  width:260px;
+  padding:22px;
   background:linear-gradient(135deg,#ffd700,#ffec8b);
   color:#000;
+  border-radius:18px;
   font-weight:700;
 }
 
@@ -108,7 +114,7 @@ img.photo{
   left:0;top:0;
 }
 
-/* LETTER */
+/* LETTER PAGE */
 #letterPage{
   background:#fff7f1;
   color:#2d2d2d;
@@ -134,7 +140,7 @@ img.photo{
   margin-top:10px;
 }
 
-/* HEARTS */
+/* FLOATING HEARTS */
 .heart{
   position:fixed;
   bottom:-10px;
@@ -156,7 +162,7 @@ img.photo{
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- TAP -->
+<!-- TAP & HOLD -->
 <div class="section active">
   <div id="hold"
     onmousedown="holdStart()" ontouchstart="holdStart()"
@@ -166,10 +172,10 @@ img.photo{
   </div>
 </div>
 
-<!-- BOX -->
+<!-- BOX DISTRACTION -->
 <div class="section">
   <p>Clear the boxes</p><br>
-  <button id="continueBtn" onclick="next()">Continue →</button>
+  <button onclick="next()">Continue →</button>
   <div id="boxArea"></div>
 </div>
 
@@ -180,9 +186,9 @@ img.photo{
 <div class="section"><img class="photo" src="img4.jpg"></div>
 <div class="section"><img class="photo" src="img5.jpg"></div>
 
-<!-- TICKET -->
+<!-- GOLDEN TICKET -->
 <div class="section">
-  <button id="ticket" onclick="next()">🎫 GOLDEN TICKET<br><br>Tap to open</button>
+  <div id="ticket" onclick="next()">🎫 GOLDEN TICKET<br><br>Tap to open</div>
 </div>
 
 <!-- SLIDE -->
@@ -213,7 +219,7 @@ function next(){
   if(idx>=2 && idx<=6) setTimeout(next,3000)
 }
 
-/* HOLD */
+/* TAP & HOLD */
 let prog=0,holdInt
 function holdStart(){
   holdInt=setInterval(()=>{
@@ -231,20 +237,14 @@ function holdEnd(){clearInterval(holdInt)}
 
 /* BOXES */
 function initBoxes(){
-  const btn=document.getElementById('continueBtn')
   const area=document.getElementById('boxArea')
-  const data=[
-    ['💋','box1'],
-    ['❤️','box2'],
-    ['😍','box3'],
-    ['💕','box4']
-  ]
-  data.forEach((d,i)=>{
+  const emojis=['💋','❤️','😍','💕']
+  emojis.forEach((e,i)=>{
     const b=document.createElement('div')
-    b.className='box '+d[1]
-    b.textContent=d[0]
-    b.style.left=btn.offsetLeft+i*25+'px'
-    b.style.top=btn.offsetTop+i*25+'px'
+    b.className='box box'+(i+1)
+    b.textContent=e
+    b.style.left=120+i*20+'px'
+    b.style.top=220+i*20+'px'
     area.appendChild(b)
     drag(b)
   })
@@ -253,8 +253,8 @@ function drag(el){
   el.onpointerdown=e=>{
     el.setPointerCapture(e.pointerId)
     el.onpointermove=m=>{
-      el.style.left=m.clientX-80+'px'
-      el.style.top=m.clientY-80+'px'
+      el.style.left=m.clientX-75+'px'
+      el.style.top=m.clientY-75+'px'
     }
   }
 }
@@ -272,7 +272,7 @@ knob.onpointerdown=e=>{
   }
 }
 
-/* LETTER TEXT */
+/* LETTER TEXT (UNCHANGED) */
 const TEXT=`Every little moment...
 Every smile...
 Led me here,
